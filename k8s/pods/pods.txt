@@ -1,0 +1,5 @@
+A pod is the smallest element on a Kubernetes cluster
+pod of whales
+
+a pod not a container
+pod is a collection of containers + other resources

@@ -1,0 +1,8 @@
+Initially, applications were deployed on VMs, which are heavy and costly because each VM runs its own OS.
+Then containers came in, allowing multiple applications to run on the same OS kernel, making deployments faster and more efficient.
+
+However, when we start running many containers across multiple machines, managing them becomes difficult — especially scaling, availability, and failures.
+
+Kubernetes solves this by acting as a container orchestrator. We define the desired state using YAML files (like how many replicas we want), and Kubernetes automatically handles scheduling, scaling, load balancing, and self-healing.
+
+Kubernetes has a control plane that manages the cluster and worker nodes that actually run the containers. If we want 100 replicas of an application, Kubernetes ensures that exactly 100 instances are always running.
