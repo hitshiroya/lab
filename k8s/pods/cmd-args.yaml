@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ping-container
+spec:
+  restartPolicy: Never
+  containers:
+  - name: ping-container
+    image: busybox:1.36
+    command: ["ping"]
+    args: ["-c", "60", "8.8.8.8"]

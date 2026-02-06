@@ -5,8 +5,10 @@ metadata:
     run : nginx-pod
     type: temp
   name: nginx-pod
-spec:
+spec: 
   containers:
   - name: nginx
     image: nginx:1.14.2
+  nodeSelector:
+    size: Large
     
