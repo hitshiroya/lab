@@ -1,0 +1,10 @@
+Ingress Resource - Rule 1
+kubectl create ingress --help
+
+kubectl create ingress first-ingress --rule="example.internal/*=example-service:80"
+
+kubectl describe ingress first-ingress
+Ingress Resource - Rule 2
+kubectl create ingress second-ingress --rule="example.internal/*=example-service:80" --rule="kplabs.internal/*=kplabs-service:80"
+Generating Manifest File for Ingress Resource
+kubectl create ingress second-ingress --rule="example.internal/*=example-service:80" --rule="kplabs.internal/*=kplabs-service:80" --dry-run=client -o yaml
