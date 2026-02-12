@@ -9,7 +9,7 @@ async def main():
             "content" : "what is namespace in openshift?"
         }
     ]
-    async for event in client.chat_completion(messages,False):
+    async for event in client.chat_completion(messages,True):
         print(event)
 
 
