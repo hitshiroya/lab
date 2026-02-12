@@ -1,4 +1,6 @@
+import asyncio
 from groq import AsyncGroq
+from groq import RateLimitError
 from typing import Any , AsyncGenerator
 from dotenv import load_dotenv
 import os 
@@ -37,20 +39,32 @@ class LLMClient:
     
     async def chat_completion(self,messages: list[dict[str,Any]],stream:bool = True) -> AsyncGenerator[StreamEvent,None]:
         client = self.get_client()
-
+        self.max_retries : int =  3
         kwargs = {
              "model": model_name,
              "messages" : messages,
              "stream" : stream
         }
 
-        if stream:
-            async for event in self._stream_response(client,kwargs):
-                yield event
+        for attempt in range(self.max_retries + 1):
+            try:
+                if stream:
+                    async for event in self._stream_response(client,kwargs):
+                        yield event
 
-        else:
-            event = await self._non_stream_response(client,kwargs)
-            yield event
+                else:
+                    event = await self._non_stream_response(client,kwargs)
+                    yield event
+                return
+            except RateLimitError as e:
+                if attempt < self.max_retries:
+                    wait_time = 2**attempt
+                    await asyncio.sleep(wait_time)
+                else:
+                    yield StreamEvent(
+                        type = EventType.ERROR,
+                        error = f"Rate limit existed"
+                    )
 
     
     async def _stream_response(self, client : AsyncGroq , kwargs : dict[str,Any]) -> AsyncGenerator[StreamEvent, None]:
