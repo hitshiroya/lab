@@ -1,6 +1,7 @@
-from fastapi import  FastAPI, Path
+from fastapi import FastAPI, Path, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
+from starlette import status
 
 app = FastAPI()
 
@@ -52,7 +53,7 @@ async def delete_book(delete_id: int = Path(gt=0)):
             break
 
 
-@app.post("/api/create-book")
+@app.post("/api/create-book", status_code=status.HTTP_201_CREATED)
 async def create_books(book_request: Book_Request):
     new_book_store = Book(**book_request.model_dump())
     books.append(generate_book_id(new_book_store))
@@ -60,13 +61,18 @@ async def create_books(book_request: Book_Request):
 
 @app.put("/api/update_book")
 async def update_book(updated_book: Book_Request):
+    book_changed = False
     for i in books:
         if i.name == updated_book.name:
             updated_book.author = "Jonty"
+            book_changed = True
+
+    if not book_changed:
+        raise HTTPException(status_code=401, detail="item not found")
     return updated_book
 
 
-@app.get("/api/books/")
+@app.get("/api/books/", status_code=status.HTTP_200_OK)
 async def get_books_rating(book_rating: int):
     new_book_by_rating = []
     for i in books:
@@ -76,14 +82,14 @@ async def get_books_rating(book_rating: int):
     return new_book_by_rating
 
 
-@app.get("/api/books/{book_id}")
+@app.get("/api/books/{book_id}", status_code=status.HTTP_200_OK)
 async def get_book_by_id(book_id: int = Path(gt=0)):
     for i in range(len(books)):
         if books[i].id == book_id:
             return books[i]
 
 
-@app.get("/api/books/{publish_year}")
+@app.get("/api/books/{publish_year}", status_code=status.HTTP_200_OK)
 async def get_book_publish_year(publish_year: int):
     new_book_publish_year = []
 
@@ -94,6 +100,6 @@ async def get_book_publish_year(publish_year: int):
     return new_book_publish_year
 
 
-@app.get("/api/books")
+@app.get("/api/books", status_code=status.HTTP_200_OK)
 async def read_all_books():
     return books
