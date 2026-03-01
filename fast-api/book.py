@@ -3,12 +3,25 @@ from fastapi import Body, FastAPI
 app = FastAPI()
 
 
+class Book:
+    id : str
+    name: str
+    author: str
+    rating: str
+
+
+    def __init__(self,id,name,author,rating):
+        self.id = id
+        self.name = name
+        self.author = author
+        self.rating = rating
+
 books = [
-    {"name": "thunder strom", "author": "kelvi kei", "published": "true"},
-    {"name": "thunder strom1", "author": "kelvi kei", "published": "true"},
-    {"name": "thunder strom2", "author": "kelvi kei2", "published": "true"},
-    {"name": "thunder strom3", "author": "kelvi kei", "published": "false"},
-    {"name": "thunder strom4", "author": "kelvi kei4", "published": "true"},
+    Book(1,"Untold Story", "John Doe" , 5),
+    Book(2,"Untold Story1", "John Drake" , 5),
+    Book(3,"Untold Story2", "Jim Perry" , 2),
+    Book(4,"Untold Story3", "Merc Rons" , 4),
+    Book(5,"Untold Story4", "Jack Par" , 3),
 ]
 
 
