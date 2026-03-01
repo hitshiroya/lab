@@ -1,4 +1,6 @@
-from fastapi import Body, FastAPI
+from fastapi import Body, FastAPI 
+from pydantic import BaseModel , Field
+from typing import Optional
 
 app = FastAPI()
 
@@ -16,6 +18,13 @@ class Book:
         self.author = author
         self.rating = rating
 
+class Book_Request(BaseModel):
+    id: Optional[int] = Field(description="id is not required during creation" , default=None)
+    name: str = Field(min_length= 3)
+    author: str = Field(min_length= 3)
+    rating: int = Field(gt=0,lt=6)
+
+
 books = [
     Book(1,"Untold Story", "John Doe" , 5),
     Book(2,"Untold Story1", "John Drake" , 5),
@@ -24,7 +33,10 @@ books = [
     Book(5,"Untold Story4", "Jack Par" , 3),
 ]
 
-
+def generate_book_id(book):
+    book.id = 1 if len(books) == 0 else books[-1].id + 1
+    return book
+    
 @app.delete("/api/delete-book/{delete_title}")
 async def delete_book(delete_title: str):
     print(delete_title)
@@ -35,8 +47,9 @@ async def delete_book(delete_title: str):
 
 
 @app.post("/api/create-book")
-async def create_books(new_book=Body()):
-    return books.append(new_book)
+async def create_books(book_request:Book_Request):
+    new_book_store = Book(**book_request.model_dump())
+    books.append(generate_book_id(new_book_store))
 
 
 @app.put("/api/update_book")
