@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 app = FastAPI()
-SQLALCHEMY_DATABASE_URL = 'DB_URL'
+SQLALCHEMY_DATABASE_URL = 'sqlite:///./todosdb.db'
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'check_same_thread': False})
 
