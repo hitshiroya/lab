@@ -279,7 +279,313 @@ def sum_list(lst):
 print(f"\n\nSum of [1,2,3,4,5]: {sum_list([1,2,3,4,5])}")
 
 # ============================================
-# 8. DOCSTRINGS AND ANNOTATIONS
+# 8. PASS BY REFERENCE VS VALUE
+# ============================================
+
+print("\n" + "="*50)
+print("PASS BY REFERENCE VS VALUE")
+print("="*50)
+
+print("""
+Python uses "pass by object reference" (or "pass by assignment"):
+- Variables are references to objects
+- When you pass an argument, you pass a reference to the object
+- Whether the original changes depends on:
+  1. If the object is MUTABLE or IMMUTABLE
+  2. If you MODIFY the object or REASSIGN the variable
+
+IMMUTABLE: int, float, str, tuple, frozenset, bool
+MUTABLE: list, dict, set, custom objects
+""")
+
+# ============================================
+# 8.1. IMMUTABLE OBJECTS (int, str, tuple)
+# ============================================
+
+print("\n--- Immutable Objects ---")
+
+# Integers (immutable)
+print("\nExample 1: Integer (immutable)")
+def modify_number(x):
+    print(f"  Inside function, before: x = {x}, id = {id(x)}")
+    x = x + 10  # Creates a NEW object
+    print(f"  Inside function, after: x = {x}, id = {id(x)}")
+    return x
+
+num = 5
+print(f"Before function call: num = {num}, id = {id(num)}")
+result = modify_number(num)
+print(f"After function call: num = {num}, id = {id(num)}")
+print(f"Returned value: result = {result}")
+
+# Strings (immutable)
+print("\nExample 2: String (immutable)")
+def modify_string(s):
+    print(f"  Inside function, before: s = '{s}', id = {id(s)}")
+    s = s + " World"  # Creates a NEW string
+    print(f"  Inside function, after: s = '{s}', id = {id(s)}")
+
+text = "Hello"
+print(f"Before function call: text = '{text}', id = {id(text)}")
+modify_string(text)
+print(f"After function call: text = '{text}', id = {id(text)}")
+
+# ============================================
+# 8.2. MUTABLE OBJECTS (list, dict, set)
+# ============================================
+
+print("\n--- Mutable Objects ---")
+
+# Lists (mutable) - modifying in place
+print("\nExample 3: List - Modifying in place")
+def modify_list_inplace(lst):
+    print(f"  Inside function, before: lst = {lst}, id = {id(lst)}")
+    lst.append(4)  # Modifies the SAME object
+    lst[0] = 999   # Modifies the SAME object
+    print(f"  Inside function, after: lst = {lst}, id = {id(lst)}")
+
+my_list = [1, 2, 3]
+print(f"Before function call: my_list = {my_list}, id = {id(my_list)}")
+modify_list_inplace(my_list)
+print(f"After function call: my_list = {my_list}, id = {id(my_list)}")
+print("⚠️ Original list WAS modified!")
+
+# Lists (mutable) - reassignment
+print("\nExample 4: List - Reassignment")
+def reassign_list(lst):
+    print(f"  Inside function, before: lst = {lst}, id = {id(lst)}")
+    lst = [10, 20, 30]  # Creates a NEW list (reassignment)
+    print(f"  Inside function, after: lst = {lst}, id = {id(lst)}")
+
+my_list2 = [1, 2, 3]
+print(f"Before function call: my_list2 = {my_list2}, id = {id(my_list2)}")
+reassign_list(my_list2)
+print(f"After function call: my_list2 = {my_list2}, id = {id(my_list2)}")
+print("✓ Original list was NOT modified (reassignment creates new object)")
+
+# Dictionaries (mutable)
+print("\nExample 5: Dictionary - Modifying in place")
+def modify_dict(d):
+    d["new_key"] = "new_value"
+    d["name"] = "Modified"
+
+my_dict = {"name": "Alice", "age": 25}
+print(f"Before: {my_dict}")
+modify_dict(my_dict)
+print(f"After: {my_dict}")
+print("⚠️ Original dictionary WAS modified!")
+
+# ============================================
+# 8.3. PREVENTING MODIFICATIONS
+# ============================================
+
+print("\n--- Preventing Modifications ---")
+
+# Using copy for shallow copy
+print("\nExample 6: Using copy()")
+def modify_list_copy(lst):
+    lst = lst.copy()  # Create a copy
+    lst.append(4)
+    return lst
+
+original = [1, 2, 3]
+modified = modify_list_copy(original)
+print(f"Original: {original}")
+print(f"Modified: {modified}")
+
+# Using slicing for copy
+print("\nExample 7: Using slicing [:] to copy")
+def modify_with_slice(lst):
+    lst = lst[:]  # Create a copy using slicing
+    lst.append(4)
+    return lst
+
+original2 = [1, 2, 3]
+modified2 = modify_with_slice(original2)
+print(f"Original: {original2}")
+print(f"Modified: {modified2}")
+
+# Deep copy for nested structures
+print("\nExample 8: Deep copy for nested structures")
+import copy
+
+def modify_nested(nested_list):
+    nested_list_copy = copy.deepcopy(nested_list)
+    nested_list_copy[0][0] = 999
+    return nested_list_copy
+
+nested = [[1, 2], [3, 4]]
+modified_nested = modify_nested(nested)
+print(f"Original nested: {nested}")
+print(f"Modified nested: {modified_nested}")
+
+# ============================================
+# 8.4. DEFAULT MUTABLE ARGUMENTS (GOTCHA!)
+# ============================================
+
+print("\n--- Default Mutable Arguments (Common Gotcha!) ---")
+
+# BAD: Mutable default argument
+print("\nExample 9: BAD - Mutable default argument")
+def bad_append(item, lst=[]):  # ⚠️ DON'T DO THIS!
+    lst.append(item)
+    return lst
+
+print(f"Call 1: {bad_append(1)}")
+print(f"Call 2: {bad_append(2)}")
+print(f"Call 3: {bad_append(3)}")
+print("⚠️ Same list is reused! Default is created only once!")
+
+# GOOD: Using None as default
+print("\nExample 10: GOOD - Using None as default")
+def good_append(item, lst=None):
+    if lst is None:
+        lst = []  # Create new list each time
+    lst.append(item)
+    return lst
+
+print(f"Call 1: {good_append(1)}")
+print(f"Call 2: {good_append(2)}")
+print(f"Call 3: {good_append(3)}")
+print("✓ New list created each time!")
+
+# Another example with dictionary
+print("\nExample 11: Dictionary default argument")
+def add_to_config(key, value, config=None):
+    if config is None:
+        config = {}
+    config[key] = value
+    return config
+
+print(f"Config 1: {add_to_config('name', 'Alice')}")
+print(f"Config 2: {add_to_config('age', 25)}")
+
+# ============================================
+# 8.5. PRACTICAL EXAMPLES
+# ============================================
+
+print("\n--- Practical Examples ---")
+
+# Example 1: Swap without return (doesn't work as expected)
+print("\nExample 12: Swap attempt (doesn't work)")
+def swap_wrong(a, b):
+    temp = a
+    a = b
+    b = temp
+    print(f"  Inside function: a={a}, b={b}")
+
+x, y = 10, 20
+print(f"Before swap: x={x}, y={y}")
+swap_wrong(x, y)
+print(f"After swap: x={x}, y={y}")
+print("✗ Didn't work! Use return or pass mutable container")
+
+# Example 2: Swap using return
+print("\nExample 13: Swap using return")
+def swap_correct(a, b):
+    return b, a
+
+x, y = 10, 20
+print(f"Before swap: x={x}, y={y}")
+x, y = swap_correct(x, y)
+print(f"After swap: x={x}, y={y}")
+print("✓ Works!")
+
+# Example 3: Modifying list elements
+print("\nExample 14: Modifying list elements")
+def double_values(numbers):
+    for i in range(len(numbers)):
+        numbers[i] *= 2
+
+nums = [1, 2, 3, 4, 5]
+print(f"Before: {nums}")
+double_values(nums)
+print(f"After: {nums}")
+print("✓ List modified in place")
+
+# Example 4: Returning new list instead of modifying
+print("\nExample 15: Returning new list (functional approach)")
+def double_values_functional(numbers):
+    return [x * 2 for x in numbers]
+
+nums2 = [1, 2, 3, 4, 5]
+print(f"Original: {nums2}")
+doubled = double_values_functional(nums2)
+print(f"Doubled: {doubled}")
+print(f"Original unchanged: {nums2}")
+
+# ============================================
+# 8.6. CUSTOM OBJECTS
+# ============================================
+
+print("\n--- Custom Objects ---")
+
+print("\nExample 16: Custom class objects (mutable)")
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    
+    def __repr__(self):
+        return f"Person(name='{self.name}', age={self.age})"
+
+def modify_person(person):
+    person.age += 1  # Modifies the original object
+    person.name = "Modified"
+
+def reassign_person(person):
+    person = Person("New Person", 100)  # Reassignment (doesn't affect original)
+
+p1 = Person("Alice", 25)
+print(f"Original: {p1}")
+
+modify_person(p1)
+print(f"After modify: {p1}")
+
+p2 = Person("Bob", 30)
+print(f"\nOriginal: {p2}")
+reassign_person(p2)
+print(f"After reassign: {p2}")
+
+# ============================================
+# 8.7. SUMMARY AND BEST PRACTICES
+# ============================================
+
+print("\n" + "="*50)
+print("SUMMARY")
+print("="*50)
+
+print("""
+KEY TAKEAWAYS:
+
+1. IMMUTABLE objects (int, str, tuple):
+   - Cannot be changed in place
+   - Modifications create new objects
+   - Original always remains unchanged
+
+2. MUTABLE objects (list, dict, set):
+   - CAN be changed in place
+   - Modifications affect the original
+   - Reassignment creates new object (doesn't affect original)
+
+3. WHEN TO USE EACH APPROACH:
+   - Modify in place: When you want to change the original
+   - Return new object: When you want to preserve the original
+   
+4. AVOID MUTABLE DEFAULT ARGUMENTS:
+   - Use None as default, then create new object inside function
+   
+5. USE COPY when needed:
+   - Shallow copy: list.copy() or dict.copy() or lst[:]
+   - Deep copy: copy.deepcopy() for nested structures
+
+MEMORY TIP:
+"If you can change it in place, it's mutable. 
+ If reassignment is the only way to 'change' it, it's immutable."
+""")
+
+# ============================================
+# 9. DOCSTRINGS AND ANNOTATIONS
 # ============================================
 
 print("\n" + "="*50)
