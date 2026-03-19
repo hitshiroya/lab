@@ -5,7 +5,6 @@ from sqlmodel import SQLModel
 
 from alembic import context
 from src.core.config import settings
-from src.clusters.models import ClusterModel  
 
 config = context.config
 
