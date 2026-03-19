@@ -13,33 +13,35 @@ class ClusterService:
         
 
     @staticmethod
-    def get_specific_cluster(cluster_id: int,session: Session):
-        for i in clusterData:
-            if i["id"] == cluster_id:
-                return i
+    def get_specific_cluster(cluster_name: str,session: Session):
+        cluster = session.exec(select(ClusterModel).where(ClusterModel.name == cluster_name)).first()
+        return cluster
 
     @staticmethod
     def create_cluster_entry(clusterRequest: ClusterReq,session: Session):
-        new_id = max([i["id"] for i in clusterData], default=0) + 1
-        new_cluster_data = clusterRequest.model_dump()
-        new_cluster_data["id"] = new_id
-        clusterData.append(new_cluster_data)
-        return new_cluster_data
+        new_cluster = ClusterModel(**clusterRequest.model_dump())
+        session.add(new_cluster)
+        session.commit()
+        session.refresh(new_cluster)
+        return new_cluster
+
 
     @staticmethod
-    def update_cluster_entry(cluster_id: int, cluster_update_data: ClusterReq,session: Session):
-        update_data = cluster_update_data.model_dump()
-
-        for i in clusterData:
-            if i["id"] == cluster_id:
-                i.update(update_data)
-                return i
+    def update_cluster_entry(cluster_name: str, cluster_update_data: ClusterReq,session: Session):
+        cluster = session.exec(select(ClusterModel).where(ClusterModel.name == cluster_name)).first()
+        if not cluster:
+            return None
+        for key, value in cluster_update_data.model_dump().items():
+            setattr(cluster, key, value)
+        session.commit()
+        session.refresh(cluster)
+        return cluster  
 
     @staticmethod
-    def delete_cluster_entry(cluster_id: int,session: Session):
-        for i in clusterData:
-            if i["id"] == cluster_id:
-                clusterData.remove(i)
-                return True
-
-        return False
+    def delete_cluster_entry(cluster_name: str,session: Session):
+        cluster = session.exec(select(ClusterModel).where(ClusterModel.name == cluster_name)).first()
+        if not cluster:
+            return False
+        session.delete(cluster)
+        session.commit()
+        return True

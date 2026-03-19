@@ -3,7 +3,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from src.clusters.data import cluster
 from src.clusters.db import get_session
 from src.clusters.schemas import ClusterReq, ClusterResponse
 from src.clusters.service import ClusterService
@@ -28,9 +27,9 @@ Get specific cluster available inside infra
 """
 
 
-@cluster_router.get("/{cluster_id}", response_model=ClusterResponse, status_code=status.HTTP_200_OK)
-async def get_specific_cluster(cluster_id: int, session: SessionDep):
-    result = ClusterService.get_specific_cluster(cluster, cluster_id)
+@cluster_router.get("/{cluster_name}", response_model=ClusterResponse, status_code=status.HTTP_200_OK)
+async def get_specific_cluster(cluster_name: str, session: SessionDep):
+    result = ClusterService.get_specific_cluster(cluster_name, session)
 
     if result is None:
         raise HTTPException(
@@ -47,7 +46,7 @@ Add new cluster entry to infra data
 
 @cluster_router.post("/", response_model=ClusterResponse, status_code=status.HTTP_201_CREATED)
 async def create_cluster_entry(clusterData: ClusterReq, session: SessionDep):
-    return ClusterService.create_cluster_entry(cluster, clusterData)
+    return ClusterService.create_cluster_entry(clusterData,session)
 
 
 """
@@ -55,9 +54,9 @@ Update existing cluster with the new information inside infra data
 """
 
 
-@cluster_router.put("/{cluster_id}", response_model=ClusterResponse, status_code=status.HTTP_200_OK)
-async def update_cluster(cluster_id: int, cluster_update_data: ClusterReq, session: SessionDep):
-    result = ClusterService.update_cluster_entry(cluster, cluster_id, cluster_update_data)
+@cluster_router.put("/{cluster_name}", response_model=ClusterResponse, status_code=status.HTTP_200_OK)
+async def update_cluster(cluster_name: str, cluster_update_data: ClusterReq, session: SessionDep):
+    result = ClusterService.update_cluster_entry(cluster_name, cluster_update_data,session)
     if result is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -71,9 +70,9 @@ Delete the specific entry from the infra list
 """
 
 
-@cluster_router.delete("/{cluster_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_cluster(cluster_id: int, session: SessionDep):
-    result = ClusterService.delete_cluster_entry(cluster, cluster_id)
+@cluster_router.delete("/{cluster_name}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_cluster(cluster_name: str, session: SessionDep):
+    result = ClusterService.delete_cluster_entry(cluster_name,session)
     if not result:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

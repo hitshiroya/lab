@@ -1,5 +1,5 @@
 from typing import Optional
-
+from uuid import UUID
 from pydantic import BaseModel
 
 
@@ -7,12 +7,12 @@ class ClusterReq(BaseModel):
     name: str
     owner: str
     org: str
-    isActive: bool
+    is_active: bool
 
 
 class ClusterResponse(BaseModel):
-    id: Optional[int] = None
+    id: UUID
     name: str
     owner: str
     org: str
-    isActive: bool
+    is_active: bool

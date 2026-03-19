@@ -1,10 +1,12 @@
 from typing import Optional
+from uuid import UUID, uuid4
+
 from sqlmodel import Field, SQLModel
 
 
 class ClusterModel(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    name: str = Field(index=True,unique=True)
     owner : str
     org : str
     is_active : bool = Field(default=False)
