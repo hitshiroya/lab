@@ -9,6 +9,7 @@ class RegisterReq(BaseModel):
     password: str
     email: str
 
+
 class LoginReq(BaseModel):
     username: str
     password: str
@@ -20,10 +21,11 @@ class RegisterResponse(BaseModel):
     username: str
     email: str
 
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
 
+
 class LoginResponse(TokenResponse):
     username: str
-    

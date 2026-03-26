@@ -1,4 +1,3 @@
-
 from sqlmodel import Session, select
 
 from src.clusters.models import ClusterModel
@@ -10,24 +9,22 @@ class ClusterService:
     def get_all_clusters(session: Session):
         clusters = session.exec(select(ClusterModel)).all()
         return clusters
-        
 
     @staticmethod
-    def get_specific_cluster(cluster_name: str,session: Session):
+    def get_specific_cluster(cluster_name: str, session: Session):
         cluster = session.exec(select(ClusterModel).where(ClusterModel.name == cluster_name)).first()
         return cluster
 
     @staticmethod
-    def create_cluster_entry(clusterRequest: ClusterReq,session: Session):
+    def create_cluster_entry(clusterRequest: ClusterReq, session: Session):
         new_cluster = ClusterModel(**clusterRequest.model_dump())
         session.add(new_cluster)
         session.commit()
         session.refresh(new_cluster)
         return new_cluster
 
-
     @staticmethod
-    def update_cluster_entry(cluster_name: str, cluster_update_data: ClusterReq,session: Session):
+    def update_cluster_entry(cluster_name: str, cluster_update_data: ClusterReq, session: Session):
         cluster = session.exec(select(ClusterModel).where(ClusterModel.name == cluster_name)).first()
         if not cluster:
             return None
@@ -35,10 +32,10 @@ class ClusterService:
             setattr(cluster, key, value)
         session.commit()
         session.refresh(cluster)
-        return cluster  
+        return cluster
 
     @staticmethod
-    def delete_cluster_entry(cluster_name: str,session: Session):
+    def delete_cluster_entry(cluster_name: str, session: Session):
         cluster = session.exec(select(ClusterModel).where(ClusterModel.name == cluster_name)).first()
         if not cluster:
             return False
