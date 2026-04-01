@@ -1,0 +1,12 @@
+[project]
+name = "pinpoint-mcp"
+version = "0.1.0"
+description = "Pinpoint real CSS selectors on any live page — stop AI from hallucinating selectors in UI automation tests."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastmcp>=3.1.1",
+    "langchain-ollama>=1.0.1",
+    "mcp[cli]>=1.26.0",
+    "playwright>=1.58.0",
+]
